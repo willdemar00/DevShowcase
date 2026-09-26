@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Column, DateTime, ForeignKey, String, Table, Text, func
+from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, String, Table, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
@@ -28,6 +28,8 @@ class Project(Base):
     description: Mapped[str | None] = mapped_column(Text)
     repository_url: Mapped[str] = mapped_column(String(255), nullable=False)
     demo_url: Mapped[str | None] = mapped_column(String(255))
+    likes: Mapped[int] = mapped_column(Integer, nullable=False, default=0, server_default="0")
+    avg_rating: Mapped[float | None] = mapped_column(Float)  # nota média; fica null até o 1º feedback
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
 
     profile_id: Mapped[int] = mapped_column(

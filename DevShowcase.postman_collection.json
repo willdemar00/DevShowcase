@@ -1,458 +1,1212 @@
 {
   "info": {
     "name": "DevShowcase API",
+    "description": "Coleção da DevShowcase API (etapas 1 e 2). Para testar em produção, troque a variável baseUrl pela URL do Render e rode a pasta 0 antes das outras.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
+  "item": [
+    {
+      "name": "0. Preparação (rodar uma vez no banco)",
+      "item": [
+        {
+          "name": "01 - Status da API",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/status"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "02 - Tecnologia Python",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/technologies",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Python\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"201 (criada) ou 409 (já existia)\", () => pm.expect(pm.response.code).to.be.oneOf([201, 409]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "03 - Tecnologia FastAPI",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/technologies",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"FastAPI\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"201 (criada) ou 409 (já existia)\", () => pm.expect(pm.response.code).to.be.oneOf([201, 409]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "04 - Tecnologia PostgreSQL",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/technologies",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"PostgreSQL\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"201 (criada) ou 409 (já existia)\", () => pm.expect(pm.response.code).to.be.oneOf([201, 409]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "05 - Tecnologia React",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/technologies",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"React\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"201 (criada) ou 409 (já existia)\", () => pm.expect(pm.response.code).to.be.oneOf([201, 409]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "06 - Listar tecnologias (guarda os ids)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/technologies"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const techs = pm.response.json();",
+                  "[\"python\", \"fastapi\", \"postgresql\", \"react\"].forEach(nome => {",
+                  "    const t = techs.find(x => x.name.toLowerCase() === nome);",
+                  "    pm.test(`Tecnologia ${nome} cadastrada`, () => pm.expect(t).to.not.be.undefined);",
+                  "    pm.collectionVariables.set(`${nome}Id`, t.id);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "07 - Perfil Wildemar",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/profiles",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Wildemar Pedro Leal\",\n  \"email\": \"wildemar.{{$timestamp}}@email.com\",\n  \"bio\": \"Estudante de Sistemas para Internet na UAPI\",\n  \"github_url\": \"https://github.com/willdemar00\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+                  "const r = pm.response.json();",
+                  "pm.collectionVariables.set(\"wildemarId\", r.id);",
+                  "pm.collectionVariables.set(\"wildemarEmail\", r.email);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "08 - Perfil Matheus",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/profiles",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Matheus Lima Avelino Barros\",\n  \"email\": \"matheus.{{$timestamp}}@email.com\",\n  \"bio\": \"Front-end com React\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+                  "const r = pm.response.json();",
+                  "pm.collectionVariables.set(\"matheusId\", r.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "09 - Perfil Osanan",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/profiles",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Osanan José Leal\",\n  \"email\": \"osanan.{{$timestamp}}@email.com\",\n  \"bio\": \"Back-end com Python\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+                  "const r = pm.response.json();",
+                  "pm.collectionVariables.set(\"osananId\", r.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "10 - Projeto Mercadinho do Bairro",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/projects",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Mercadinho do Bairro\",\n  \"description\": \"Catálogo de produtos e pedidos para mercadinhos de bairro\",\n  \"repository_url\": \"https://github.com/willdemar00/mercadinho-do-bairro\",\n  \"profile_id\": {{wildemarId}},\n  \"technology_ids\": [{{pythonId}}, {{fastapiId}}, {{postgresqlId}}]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+                  "const r = pm.response.json();",
+                  "pm.test(\"Começa sem curtidas e sem média\", () => {",
+                  "    pm.expect(r.likes).to.eql(0);",
+                  "    pm.expect(r.avg_rating).to.eql(null);",
+                  "});",
+                  "pm.collectionVariables.set(\"mercadinhoId\", r.id);",
+                  "pm.collectionVariables.set(\"mercadinhoLikes\", 0);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "11 - Projeto Horta Comunitária",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/projects",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Horta Comunitária\",\n  \"description\": \"Agenda de plantio e colheita dividida entre vizinhos\",\n  \"repository_url\": \"https://github.com/matheuslima/horta-comunitaria\",\n  \"demo_url\": \"https://horta-comunitaria.vercel.app\",\n  \"profile_id\": {{matheusId}},\n  \"technology_ids\": [{{reactId}}, {{fastapiId}}]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+                  "const r = pm.response.json();",
+                  "pm.test(\"Começa sem curtidas e sem média\", () => {",
+                  "    pm.expect(r.likes).to.eql(0);",
+                  "    pm.expect(r.avg_rating).to.eql(null);",
+                  "});",
+                  "pm.collectionVariables.set(\"hortaId\", r.id);",
+                  "pm.collectionVariables.set(\"hortaLikes\", 0);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "12 - Projeto Bolão da Copa",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/projects",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Bolão da Copa\",\n  \"description\": \"Palpites dos jogos com ranking entre amigos\",\n  \"repository_url\": \"https://github.com/osananleal/bolao-da-copa\",\n  \"profile_id\": {{osananId}},\n  \"technology_ids\": [{{pythonId}}, {{reactId}}]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+                  "const r = pm.response.json();",
+                  "pm.test(\"Começa sem curtidas e sem média\", () => {",
+                  "    pm.expect(r.likes).to.eql(0);",
+                  "    pm.expect(r.avg_rating).to.eql(null);",
+                  "});",
+                  "pm.collectionVariables.set(\"bolaoId\", r.id);",
+                  "pm.collectionVariables.set(\"bolaoLikes\", 0);"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "description": "Cadastra as tecnologias, os perfis do grupo e três projetos, guardando os ids nas variáveis da coleção. Os e-mails levam {{$timestamp}}, então a pasta pode ser rodada de novo."
+    },
+    {
+      "name": "1. Listagem com filtro e paginação",
+      "item": [
+        {
+          "name": "13 - Listar projetos (página 1, 10 por página)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/projects"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const r = pm.response.json();",
+                  "pm.test(\"Tem paginação\", () => {",
+                  "    pm.expect(r.page).to.eql(1);",
+                  "    pm.expect(r.page_size).to.eql(10);",
+                  "    pm.expect(r.total_items).to.be.at.least(3);",
+                  "    pm.expect(r.total_pages).to.eql(Math.ceil(r.total_items / 10));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "14 - Filtrar por tecnologia (react)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/projects?technology=react"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const r = pm.response.json();",
+                  "pm.test(\"Só projetos com React\", () => {",
+                  "    pm.expect(r.results).to.not.be.empty;",
+                  "    r.results.forEach(p => pm.expect(p.technologies.map(t => t.name.toLowerCase())).to.include(\"react\"));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "15 - Filtrar por tecnologia (FASTAPI em maiúsculas)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/projects?technology=FASTAPI"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const r = pm.response.json();",
+                  "pm.test(\"Só projetos com FastAPI\", () => {",
+                  "    pm.expect(r.results).to.not.be.empty;",
+                  "    r.results.forEach(p => pm.expect(p.technologies.map(t => t.name.toLowerCase())).to.include(\"fastapi\"));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "16 - Paginação: página 1 com 2 projetos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/projects?page=1&page_size=2"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const r = pm.response.json();",
+                  "pm.test(\"No máximo 2 por página\", () => {",
+                  "    pm.expect(r.results.length).to.be.at.most(2);",
+                  "    pm.expect(r.total_pages).to.eql(Math.ceil(r.total_items / 2));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "17 - Paginação: página 2 com 2 projetos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/projects?page=2&page_size=2"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Página 2\", () => pm.expect(pm.response.json().page).to.eql(2));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "18 - Tecnologia sem projetos (Cobol)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/projects?technology=Cobol"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const r = pm.response.json();",
+                  "pm.test(\"Lista vazia\", () => {",
+                  "    pm.expect(r.total_items).to.eql(0);",
+                  "    pm.expect(r.results).to.eql([]);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2. Upvote",
+      "item": [
+        {
+          "name": "19 - Upvote no Mercadinho do Bairro",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": "{{baseUrl}}/api/projects/{{mercadinhoId}}/upvote"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const antes = Number(pm.collectionVariables.get(\"mercadinhoLikes\"));",
+                  "pm.test(\"Somou 1 curtida\", () => pm.expect(pm.response.json().likes).to.eql(antes + 1));",
+                  "pm.collectionVariables.set(\"mercadinhoLikes\", pm.response.json().likes);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "20 - Upvote de novo (soma mais 1)",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": "{{baseUrl}}/api/projects/{{mercadinhoId}}/upvote"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const antes = Number(pm.collectionVariables.get(\"mercadinhoLikes\"));",
+                  "pm.test(\"Somou 1 curtida\", () => pm.expect(pm.response.json().likes).to.eql(antes + 1));",
+                  "pm.collectionVariables.set(\"mercadinhoLikes\", pm.response.json().likes);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "3. Feedbacks e nota média",
+      "item": [
+        {
+          "name": "21 - Feedback nota 5 no Mercadinho",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/projects/{{mercadinhoId}}/feedbacks",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"author_name\": \"Osanan José Leal\",\n  \"comment\": \"Achei os produtos rapidinho, muito prático.\",\n  \"rating\": 5\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+                  "const r = pm.response.json();",
+                  "pm.test(\"Feedback salvo com a média do projeto\", () => {",
+                  "    pm.expect(r.rating).to.eql(5);",
+                  "    pm.expect(r.project_avg_rating).to.be.within(1, 5);",
+                  "    if (r.project_feedback_count === 1) pm.expect(r.project_avg_rating).to.eql(5);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "22 - Feedback nota 3 no Mercadinho (recalcula a média)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/projects/{{mercadinhoId}}/feedbacks",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"author_name\": \"Visitante\",\n  \"comment\": \"Faltou a opção de entrega em casa.\",\n  \"rating\": 3\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+                  "const r = pm.response.json();",
+                  "pm.test(\"Média recalculada\", () => {",
+                  "    pm.expect(r.project_avg_rating).to.be.within(1, 5);",
+                  "    if (r.project_feedback_count === 2) pm.expect(r.project_avg_rating).to.eql(4);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "23 - Conferir curtidas e média na listagem",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/projects?technology=postgresql&page_size=50"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const p = pm.response.json().results.find(x => x.id === Number(pm.collectionVariables.get(\"mercadinhoId\")));",
+                  "pm.test(\"Mercadinho com curtidas e média\", () => {",
+                  "    pm.expect(p.likes).to.eql(Number(pm.collectionVariables.get(\"mercadinhoLikes\")));",
+                  "    pm.expect(p.avg_rating).to.not.eql(null);",
+                  "    pm.expect(p.feedback_count).to.be.at.least(2);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "4. Erros 400 e 404",
+      "item": [
+        {
+          "name": "24 - 400 - feedback com nota 6 e comentário vazio",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/projects/{{mercadinhoId}}/feedbacks",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"author_name\": \"Visitante\",\n  \"comment\": \"\",\n  \"rating\": 6\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Erro no formato padrão\", () => {",
+                  "    const r = pm.response.json();",
+                  "    pm.expect(r.status).to.eql(400);",
+                  "    pm.expect(r.detail).to.be.a(\"string\");",
+                  "    pm.expect(r.erros).to.be.an(\"array\").that.is.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "25 - 400 - página 0",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/projects?page=0"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Erro no formato padrão\", () => {",
+                  "    const r = pm.response.json();",
+                  "    pm.expect(r.status).to.eql(400);",
+                  "    pm.expect(r.detail).to.be.a(\"string\");",
+                  "    pm.expect(r.erros).to.be.an(\"array\").that.is.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "26 - 400 - page_size acima de 50",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/projects?page_size=100"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Erro no formato padrão\", () => {",
+                  "    const r = pm.response.json();",
+                  "    pm.expect(r.status).to.eql(400);",
+                  "    pm.expect(r.detail).to.be.a(\"string\");",
+                  "    pm.expect(r.erros).to.be.an(\"array\").that.is.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "27 - 400 - id que não é número",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": "{{baseUrl}}/api/projects/abc/upvote"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Erro no formato padrão\", () => {",
+                  "    const r = pm.response.json();",
+                  "    pm.expect(r.status).to.eql(400);",
+                  "    pm.expect(r.detail).to.be.a(\"string\");",
+                  "    pm.expect(r.erros).to.be.an(\"array\").that.is.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "28 - 400 - JSON malformado",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/projects/{{mercadinhoId}}/feedbacks",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"author_name\": \"Visitante\",\n  \"rating\": 5,\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Erro no formato padrão\", () => {",
+                  "    const r = pm.response.json();",
+                  "    pm.expect(r.status).to.eql(400);",
+                  "    pm.expect(r.detail).to.be.a(\"string\");",
+                  "    pm.expect(r.erros).to.be.an(\"array\").that.is.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "29 - 404 - upvote em projeto inexistente",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": "{{baseUrl}}/api/projects/999999/upvote"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 404\", () => pm.response.to.have.status(404));",
+                  "pm.test(\"Erro no formato padrão\", () => {",
+                  "    const r = pm.response.json();",
+                  "    pm.expect(r.status).to.eql(404);",
+                  "    pm.expect(r.detail).to.be.a(\"string\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "30 - 404 - feedback em projeto inexistente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/projects/999999/feedbacks",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"author_name\": \"Visitante\",\n  \"comment\": \"Esse projeto não existe\",\n  \"rating\": 4\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 404\", () => pm.response.to.have.status(404));",
+                  "pm.test(\"Erro no formato padrão\", () => {",
+                  "    const r = pm.response.json();",
+                  "    pm.expect(r.status).to.eql(404);",
+                  "    pm.expect(r.detail).to.be.a(\"string\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "31 - 404 - rota inexistente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/projetos"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 404\", () => pm.response.to.have.status(404));",
+                  "pm.test(\"Erro no formato padrão\", () => {",
+                  "    const r = pm.response.json();",
+                  "    pm.expect(r.status).to.eql(404);",
+                  "    pm.expect(r.detail).to.be.a(\"string\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "5. Etapa 1",
+      "item": [
+        {
+          "name": "32 - Buscar perfil do Wildemar com os projetos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/profiles/{{wildemarId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Perfil com projetos\", () => pm.expect(pm.response.json().projects).to.not.be.empty);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "33 - Perfil inexistente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/profiles/999999"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 404\", () => pm.response.to.have.status(404));",
+                  "pm.test(\"Erro no formato padrão\", () => {",
+                  "    const r = pm.response.json();",
+                  "    pm.expect(r.status).to.eql(404);",
+                  "    pm.expect(r.detail).to.be.a(\"string\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "34 - Perfil inválido",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/profiles",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"\",\n  \"email\": \"email-invalido\",\n  \"github_url\": \"isso-nao-e-url\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Erro no formato padrão\", () => {",
+                  "    const r = pm.response.json();",
+                  "    pm.expect(r.status).to.eql(400);",
+                  "    pm.expect(r.detail).to.be.a(\"string\");",
+                  "    pm.expect(r.erros).to.be.an(\"array\").that.is.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "35 - Perfil com e-mail repetido",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/profiles",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Outro Nome\",\n  \"email\": \"{{wildemarEmail}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 409\", () => pm.response.to.have.status(409));",
+                  "pm.test(\"Erro no formato padrão\", () => {",
+                  "    const r = pm.response.json();",
+                  "    pm.expect(r.status).to.eql(409);",
+                  "    pm.expect(r.detail).to.be.a(\"string\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "36 - Tecnologia vazia",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/technologies",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Erro no formato padrão\", () => {",
+                  "    const r = pm.response.json();",
+                  "    pm.expect(r.status).to.eql(400);",
+                  "    pm.expect(r.detail).to.be.a(\"string\");",
+                  "    pm.expect(r.erros).to.be.an(\"array\").that.is.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "37 - Tecnologia repetida (python)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/technologies",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"python\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 409\", () => pm.response.to.have.status(409));",
+                  "pm.test(\"Erro no formato padrão\", () => {",
+                  "    const r = pm.response.json();",
+                  "    pm.expect(r.status).to.eql(409);",
+                  "    pm.expect(r.detail).to.be.a(\"string\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "38 - Projeto inválido",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/projects",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"\",\n  \"repository_url\": \"url-invalida\",\n  \"profile_id\": {{wildemarId}}\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Erro no formato padrão\", () => {",
+                  "    const r = pm.response.json();",
+                  "    pm.expect(r.status).to.eql(400);",
+                  "    pm.expect(r.detail).to.be.a(\"string\");",
+                  "    pm.expect(r.erros).to.be.an(\"array\").that.is.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "39 - Projeto com perfil inexistente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/projects",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Projeto X\",\n  \"repository_url\": \"https://github.com/x/projeto\",\n  \"profile_id\": 999999\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 404\", () => pm.response.to.have.status(404));",
+                  "pm.test(\"Erro no formato padrão\", () => {",
+                  "    const r = pm.response.json();",
+                  "    pm.expect(r.status).to.eql(404);",
+                  "    pm.expect(r.detail).to.be.a(\"string\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "40 - Listar tecnologias",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/technologies"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
   "variable": [
     {
       "key": "baseUrl",
       "value": "http://localhost:8000"
-    }
-  ],
-  "item": [
-    {
-      "name": "1. Perfis",
-      "item": [
-        {
-          "name": "01 - Criar perfil",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/profiles",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "profiles"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Wildemar Pedro Leal\",\n  \"email\": \"wildemar@email.com\",\n  \"bio\": \"Estudante de Sistemas para Internet\",\n  \"github_url\": \"https://github.com/wildemar\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          }
-        },
-        {
-          "name": "02 - Criar perfil (inválido)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/profiles",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "profiles"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"\",\n  \"email\": \"email-invalido\",\n  \"github_url\": \"isso-nao-e-url\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          }
-        },
-        {
-          "name": "03 - Criar perfil (e-mail duplicado)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/profiles",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "profiles"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Outro Nome\",\n  \"email\": \"wildemar@email.com\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          }
-        },
-        {
-          "name": "04 - Buscar perfil por id",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/profiles/1",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "profiles",
-                "1"
-              ]
-            }
-          }
-        },
-        {
-          "name": "05 - Buscar perfil inexistente",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/profiles/999",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "profiles",
-                "999"
-              ]
-            }
-          }
-        }
-      ]
     },
     {
-      "name": "2. Tecnologias",
-      "item": [
-        {
-          "name": "06 - Criar tecnologia Python",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/technologies",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "technologies"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Python\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          }
-        },
-        {
-          "name": "07 - Criar tecnologia FastAPI",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/technologies",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "technologies"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"FastAPI\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          }
-        },
-        {
-          "name": "08 - Criar tecnologia SQLite",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/technologies",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "technologies"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"SQLite\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          }
-        },
-        {
-          "name": "09 - Criar tecnologia (vazia)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/technologies",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "technologies"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          }
-        },
-        {
-          "name": "10 - Criar tecnologia (duplicada)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/technologies",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "technologies"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"python\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          }
-        },
-        {
-          "name": "11 - Listar tecnologias",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/technologies",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "technologies"
-              ]
-            }
-          }
-        }
-      ]
+      "key": "pythonId",
+      "value": ""
     },
     {
-      "name": "3. Projetos",
-      "item": [
-        {
-          "name": "12 - Criar projeto",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/projects",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "projects"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"title\": \"DevShowcase API\",\n  \"description\": \"API para vitrine de projetos de desenvolvedores\",\n  \"repository_url\": \"https://github.com/wildemar/devshowcase-api\",\n  \"demo_url\": null,\n  \"profile_id\": 1,\n  \"technology_ids\": [\n    1,\n    2,\n    3\n  ]\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          }
-        },
-        {
-          "name": "13 - Criar projeto (inválido)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/projects",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "projects"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"title\": \"\",\n  \"repository_url\": \"url-invalida\",\n  \"profile_id\": 1\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          }
-        },
-        {
-          "name": "14 - Criar projeto (perfil inexistente)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/projects",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "projects"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"title\": \"Projeto X\",\n  \"repository_url\": \"https://github.com/x/projeto\",\n  \"profile_id\": 999\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          }
-        },
-        {
-          "name": "15 - Listar projetos",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/projects",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "projects"
-              ]
-            }
-          }
-        },
-        {
-          "name": "16 - Buscar perfil com o projeto",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/profiles/1",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "profiles",
-                "1"
-              ]
-            }
-          }
-        }
-      ]
+      "key": "fastapiId",
+      "value": ""
+    },
+    {
+      "key": "postgresqlId",
+      "value": ""
+    },
+    {
+      "key": "reactId",
+      "value": ""
+    },
+    {
+      "key": "wildemarId",
+      "value": ""
+    },
+    {
+      "key": "wildemarEmail",
+      "value": ""
+    },
+    {
+      "key": "matheusId",
+      "value": ""
+    },
+    {
+      "key": "osananId",
+      "value": ""
+    },
+    {
+      "key": "mercadinhoId",
+      "value": ""
+    },
+    {
+      "key": "hortaId",
+      "value": ""
+    },
+    {
+      "key": "bolaoId",
+      "value": ""
+    },
+    {
+      "key": "mercadinhoLikes",
+      "value": ""
     }
   ]
 }
